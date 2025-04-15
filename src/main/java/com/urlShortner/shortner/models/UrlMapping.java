@@ -23,6 +23,7 @@ public class UrlMapping {
 
     private int clickCount = 0;
 
+
     private LocalDateTime createdAt;
 
     @ManyToOne
