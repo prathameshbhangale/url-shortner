@@ -1,5 +1,8 @@
 package com.urlShortner.shortner.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.urlShortner.shortner.dto.JwtExceptionDTO;
+import com.urlShortner.shortner.exceptions.InvalidJwtTokenException;
 import com.urlShortner.shortner.servise.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,23 +35,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
+            // Extract JWT token from request header
             String jwt = jwtTokenProvider.getJwtFromHeader(request);
+
+            // Validate the JWT token
             if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
+                // Get username from the JWT token
                 String username = jwtTokenProvider.getUserNameFromJwtToken(jwt);
+
+                // Load user details based on username
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
                 if (userDetails != null) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    // Create authentication token
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    // Set authentication details
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    // Set the authentication in the SecurityContext
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+
         } catch (Exception e) {
+            // Log the exception for debugging purposes
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Invalid or expired JWT token\"}");
-            return;
+            String json = new ObjectMapper().writeValueAsString(
+                    new JwtExceptionDTO("Invalid JWT token or token expired", false)
+            );
+            response.getWriter().write(json);
+
+//            throw new InvalidJwtTokenException("Invalid or expired JWT token", e);
         }
+
+        // Proceed with the filter chain
         filterChain.doFilter(request, response);
     }
 }

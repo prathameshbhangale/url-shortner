@@ -1,6 +1,7 @@
 package com.urlShortner.shortner.security.jwt;
 
 
+import com.urlShortner.shortner.exceptions.InvalidJwtTokenException;
 import com.urlShortner.shortner.servise.UserDetailsImpl;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -64,11 +65,11 @@ public class JwtUtils {
                     .build().parseSignedClaims(authToken);
             return true;
         } catch (JwtException e) {
-            throw new RuntimeException(e);
+            throw new InvalidJwtTokenException("invalid token",e);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
+            throw new InvalidJwtTokenException("invalid token",e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new InvalidJwtTokenException("invalid token",e);
         }
 
     }
