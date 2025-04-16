@@ -36,6 +36,7 @@ public class UrlMappingService {
         urlMappingDTO.setShortUrl(urlMapping.getShortUrl());
         urlMappingDTO.setClickCount(urlMapping.getClickCount());
         urlMappingDTO.setCreatedDate(urlMapping.getCreatedAt());
+        urlMappingDTO.setName(urlMapping.getName());
         urlMappingDTO.setUsername(urlMapping.getUser().getUsername());
         return urlMappingDTO;
     }
@@ -52,12 +53,13 @@ public class UrlMappingService {
         return shortUrl.toString();
     }
 
-    public UrlMappingDTO createShortUrl(String originalUrl, User user) {
+    public UrlMappingDTO createShortUrl(String originalUrl, User user, String name) {
         String shortUrl = generateShortUrl();
         UrlMapping urlMapping = new UrlMapping();
         urlMapping.setOriginalUrl(originalUrl);
         urlMapping.setShortUrl(shortUrl);
         urlMapping.setUser(user);
+        urlMapping.setName(name);
         UrlMapping savedUrlMapping = urlMappingRepository.save(urlMapping);
         return convertToDto(savedUrlMapping);
     }

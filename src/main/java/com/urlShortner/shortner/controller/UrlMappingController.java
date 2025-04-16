@@ -29,8 +29,9 @@ public class UrlMappingController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createShortUrl(@RequestBody Map<String,String> request, Principal principal){
         String originalUrl = request.get("originalUrl");
+        String name = request.get("name");
         User user = userService.findByUsername(principal.getName());
-        UrlMappingDTO urlMappingDTO = urlMappingService.createShortUrl(originalUrl, user);
+        UrlMappingDTO urlMappingDTO = urlMappingService.createShortUrl(originalUrl, user,name);
         ApiResponse<UrlMappingDTO> resp = new ApiResponse<>(true,urlMappingDTO);
         return ResponseEntity.ok(resp);
     }
