@@ -37,7 +37,7 @@ public class UrlMappingController {
     }
 
     @GetMapping("/myurls")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> getUserUrls(Principal principal){
         User user = userService.findByUsername(principal.getName());
         List<UrlMappingDTO> urls = urlMappingService.getUrlsByUser(user);

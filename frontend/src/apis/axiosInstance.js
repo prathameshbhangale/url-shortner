@@ -13,8 +13,12 @@ export const apiConnector = async (
     method,
     url,
     data: bodyData,
-    headers,
+    headers:{
+      "Content-Type": "application/json", // ✅ default content type
+      ...headers, // merge passed-in headers (like Authorization)
+    },
     params,
+    withCredentials: true,
   };
 
   try {
